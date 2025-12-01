@@ -13,7 +13,7 @@ export async function authenticateToken(
   next: NextFunction
 ) {
   const token = req.cookies.access_token;
-
+  
   if (!token) return res.status(401).json({ message: 'No token provided' });
 
   try {
