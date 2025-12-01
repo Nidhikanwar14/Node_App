@@ -13,7 +13,7 @@ const PORT = Number(process.env.PORT) || 3000;
 app.use(cookieParser());
 app.use(
   cors({
-    origin: 'http://localhost:5174', // your FE URL
+    origin: 'http://localhost:5173', // your FE URL
     credentials: true, // allow cookies
   })
 );
