@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import * as userService from '../services/user.service';
-import { log } from 'console';
 
 export const createUser = async (req: Request, res: Response) => {
   try {
@@ -15,7 +14,7 @@ export const createUser = async (req: Request, res: Response) => {
 export const getUsers = async (req: Request, res: Response) => {
   try {
     const users = await userService.getAllUsers();
-    res.json(users);
+    res.json({ data: users, success: true });
   } catch (err: any) {
     console.error(err);
     res.status(500).json({ error: err.message || 'Failed to fetch user' });
@@ -37,14 +36,20 @@ export const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
     const result = await userService.authenticateUser(email, password);
 
+    res.cookie('access_token', result.token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      path: '/',
+      maxAge: 15 * 60 * 1000,
+    });
     res.json({
-      access_token: result.token,
-      token_type: 'Bearer',
       user: result.user,
       message: 'Logged in successfully!',
+      success: true,
     });
   } catch (err: any) {
-    res.status(500).json({ message: 'Authentication failed' });
+    res.status(500).json({ message: 'Authentication failed', success: false });
   }
 };
 
@@ -79,4 +84,23 @@ export const updateUser = async (req: Request, res: Response) => {
   } catch (err: any) {
     res.status(500).json({ message: 'Failed to update user' });
   }
+};
+
+export const authenticateMe = async (req: Request, res: Response) => {
+  res.json({
+    data: {
+      authenticated: true,
+    },
+    success: true,
+  });
+};
+
+export const logout = (req: Request, res: Response) => {
+  res.clearCookie('access_token', {
+    httpOnly: true,
+    secure: false, // SAME as when cookie was set
+    sameSite: 'lax', // SAME as when cookie was set
+    path: '/', // SAME as when cookie was set
+  });
+  res.json({ message: 'Logged out successfully', success: true });
 };

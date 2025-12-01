@@ -9,5 +9,6 @@ router.use('/products', productRouter);
 router.use('/login', userController.login);
 router.use('/forgot-password', userController.forgotPassword);
 router.use('/reset-password', userController.resetPassword);
+router.use('/logout', userController.logout);
 
 export default router;
